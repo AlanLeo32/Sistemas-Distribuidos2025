@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+:root{
+  --bg:#f5f7fb;
+  --card:#ffffff;
+  --muted:#6b7280;
+  --accent:#2563eb;
+  --radius:12px;
+}
+
+*{box-sizing:border-box}
+html,body,#__next{height:100%}
+body{
+  margin:0;
+  font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background:linear-gradient(180deg,var(--bg),#eef2ff);
+  color:#0f172a;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  padding:24px;
+}
+
+/* contenedor */
+.app-container{
+  max-width:900px;
+  margin:0 auto;
+  background:transparent;
+}
+
+/* detalles / summary */
+.details-card{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:14px;
+  box-shadow:0 6px 18px rgba(15,23,42,0.06);
+  border:1px solid rgba(15,23,42,0.04);
+  margin-top:12px;
+}
+
+/* style summary to look clickable and show an arrow */
+.details-card summary{
+  list-style:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px;
+  border-radius:8px;
+  user-select:none;
+  font-weight:600;
+  color:var(--accent);
+  background:linear-gradient(180deg, rgba(37,99,235,0.06), transparent);
+  transition:background .15s ease, box-shadow .15s ease, transform .08s ease;
+}
+
+/* small hint text inside summary */
+.details-card summary .hint{
+  font-weight:500;
+  font-size:0.85rem;
+  color:var(--muted);
+  margin-left:8px;
+}
+
+/* arrow indicator using pseudo element */
+.details-card summary::after{
+  content: "▸";
+  font-size:14px;
+  transform:rotate(0deg);
+  transition: transform .18s ease;
+  color:var(--accent);
+}
+
+/* rotate arrow when open */
+.details-card[open] > summary::after{
+  transform: rotate(90deg);
+}
+
+/* hover effects */
+.details-card summary:hover{
+  transform:translateY(-1px);
+  box-shadow:0 8px 20px rgba(37,99,235,0.06);
+}
+
+/* contenido dentro del details */
+.details-content{
+  padding:12px 8px 0 8px;
+}
+
+/* imagen */
+.resumen-figure img{
+  display:block;
+  max-width:100%;
+  height:auto;
+  border-radius:10px;
+  box-shadow:0 10px 30px rgba(2,6,23,0.08);
+  margin-top:10px;
+}
+
+/* leyenda */
+.resumen-caption{
+  font-size:0.85rem;
+  color:var(--muted);
+  margin-top:8px;
+}
+/* fin */
