@@ -7,3 +7,7 @@
 *.gz
 *.json
 ejnextjs/.next/cache/webpack/client-development/index.pack.gz
+/ejnextjs/.next
+/ejnextjs/.next/cache/webpack/client-development
+actividad2.js
+ejnextjs/next-env.d.ts
