@@ -1,8 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import PokemonItem from "./PokemonItem";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import Link from "next/link";
+import PokemonItem from "./PokemonItem";
+
 type Pokemon = {
     id: number;
     name: string;
@@ -12,51 +15,74 @@ type Pokemon = {
     weight: number;
 };
 
+async function fetchPokemonsWithDetails(limit: number): Promise<Pokemon[]> {
+    const listRes = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=0`);
+    if (!listRes.ok) throw new Error(`List fetch failed ${listRes.status}`);
+    const listJson = await listRes.json();
+    const results: { name: string; url: string }[] = listJson.results || [];
+
+    const details = await Promise.all(
+    results.map((r) =>
+    fetch(r.url).then((res) => {
+        if (!res.ok) throw new Error(`Detail fetch failed ${res.status}`);
+        return res.json();
+    })
+    )
+);
+
+return details as Pokemon[];
+}
+
 export default function PokemonList() {
-    const [pokemones, setPokemones] = useState<Pokemon[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
+const [pageSize, setPageSize] = useState<number>(20);
 
-    useEffect(() => {
-        let mounted = true;
-        async function fetchCargaPokemon() {
-            try {
-                setLoading(true);
-                setError(null);
-                setPokemones([]);
-                // obtener la primera página (limit=30, offset=0)
-                const listRes = await axios.get("https://pokeapi.co/api/v2/pokemon?limit=30&offset=0");
-                for (let id = 1; id <= 20; id++) {
-                    const res = await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`); 
-                    if (!mounted) break;     
-                    const data: Pokemon = res.data;
-                    setPokemones(prev => [...prev, data]);//este prev me sirve para no pisar el estado anterior
-                }
-            } catch (error) {
-                console.error('Error al obtener el Pokémon:', error.message);
-                if (mounted) setError("Error al obtener Pokémons");
-            }finally {
-            if (mounted) setLoading(false); 
-        }
-        }
+const { data: pokemones, isLoading, isError, isFetching } = useQuery<Pokemon[], Error>({
+    queryKey: ["pokemons", pageSize],
+    queryFn: () => fetchPokemonsWithDetails(pageSize),
+});
 
-        fetchCargaPokemon();
-        return () => {
-            mounted = false;
-        };
-    }, []);
-
-    if (loading) return <div style={{ padding: 20 }}>Cargando pokémons…</div>;
-    if (error) return <div style={{ padding: 20, color: "crimson" }}>{error}</div>;
+if (isLoading) {
     return (
-        <ul style={{ display: "grid", gap: 12, padding: 0, margin: 0, listStyle: "none" }}>
-            {pokemones.map(p => (
-                <li key={p.id}>
-                    <Link href={`/pokemon/${p.id}`} style={{ textDecoration: "none", color: "inherit" }}>
-                        <PokemonItem pokemon={p} />
-                    </Link>
-                </li>
-            ))}
-        </ul>
+    <ul style={{ display: "grid", gap: 12, padding: 0, margin: 0, listStyle: "none" }}>
+        {Array.from({ length: 6 }).map((_, i) => (
+        <li key={i} style={{ display: "flex", gap: 12, alignItems: "center", padding: 12, borderRadius: 10, background: "#fff", boxShadow: "0 6px 18px rgba(2,6,23,0.04)" }}>
+            <Skeleton width={72} height={72} borderRadius={8} />
+            <div style={{ flex: 1 }}>
+                <Skeleton width="40%" height={16} />
+                <div style={{ height: 8 }} />
+                <Skeleton width="60%" height={12} />
+            </div>
+            <div style={{ minWidth: 90, textAlign: "right" }}>
+                <Skeleton width={64} height={28} />
+            </div>
+        </li>
+        ))}
+    </ul>
     );
+}
+
+if (isError || !pokemones) return <div style={{ padding: 20, color: "crimson" }}>Error al cargar Pokémons</div>;
+
+return (
+    <>
+    <ul style={{ display: "grid", gap: 12, padding: 0, margin: 0, listStyle: "none" }}>
+        {pokemones.map((p) => (
+        <li key={p.id}>
+            <Link href={`/pokemon/${p.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+            <PokemonItem pokemon={p} />
+            </Link>
+        </li>
+        ))}
+    </ul>
+
+    <div style={{ marginTop: 16, display: "flex", gap: 12, alignItems: "center" }}>
+        <button
+            onClick={() => setPageSize((s) => s + 10)}
+            style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#fff", cursor: "pointer" }}
+        >Cargar más</button>
+
+        {isFetching && <span style={{ color: "#6b7280" }}>Actualizando…</span>}
+    </div>
+    </>
+);
 }
