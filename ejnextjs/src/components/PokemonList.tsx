@@ -49,14 +49,14 @@ export default function PokemonList() {
     if (loading) return <div style={{ padding: 20 }}>Cargando pokémons…</div>;
     if (error) return <div style={{ padding: 20, color: "crimson" }}>{error}</div>;
     return (
-        <div style={{ display: "grid", gap: 12 }}>
+        <ul style={{ display: "grid", gap: 12, padding: 0, margin: 0, listStyle: "none" }}>
             {pokemones.map(p => (
-                <li key={p.id} >
-                    <Link href={`/pokemon/${p.name}`}>
+                <li key={p.id}>
+                    <Link href={`/pokemon/${p.id}`} style={{ textDecoration: "none", color: "inherit" }}>
                         <PokemonItem pokemon={p} />
                     </Link>
                 </li>
             ))}
-        </div>
+        </ul>
     );
 }
