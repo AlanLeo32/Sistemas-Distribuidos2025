@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 
+import router from "next/router";
 type Pokemon = {
     id: number;
     name: string;

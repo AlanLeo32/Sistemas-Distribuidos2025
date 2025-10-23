@@ -1,2 +1,9 @@
 /node_modules
 /ejnextjs/node_modules
+/ejnextjs/.next
+/ejnextjs/.next
+/ejnextjs/.next
+/ejnextjs/.next
+*.gz
+*.json
+ejnextjs/.next/cache/webpack/client-development/index.pack.gz
