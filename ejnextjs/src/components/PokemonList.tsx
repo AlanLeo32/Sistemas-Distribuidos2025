@@ -50,7 +50,7 @@ export default function PokemonList() {
     if (error) return <div style={{ padding: 20, color: "crimson" }}>{error}</div>;
     return (
         <ul style={{ display: "grid", gap: 12, padding: 0, margin: 0, listStyle: "none" }}>
-            {pokemones.map(p => (
+            {pokemones.map((p) => (
                 <li key={p.id}>
                     <Link href={`/pokemon/${p.id}`} style={{ textDecoration: "none", color: "inherit" }}>
                         <PokemonItem pokemon={p} />
