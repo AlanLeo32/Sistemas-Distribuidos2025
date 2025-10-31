@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Link from "next/link";
-import PokemonItem from "./PokemonItem";
+import {PokemonItem} from "./PokemonItem";
 
 type Pokemon = {
     id: number;
